@@ -1,0 +1,22 @@
+flowchart LR
+    IN([TicketInput]):::io --> RT[Intent Router]
+
+    RT -->|RouterOutput| BE[Billing Expert]
+    RT -->|RouterOutput| TE[Technical Expert]
+    RT -->|RouterOutput| RE[Refund Expert]
+
+    BE -->|ExpertSignal| PR[Policy RAG Agent]
+    TE -->|ExpertSignal| PR
+    RE -->|ExpertSignal| PR
+
+    KB[(Policy KB\nvector store)]:::store -.retrieve.-> PR
+
+    PR -->|PolicyHit| PS[Priority Scorer]
+    PS -->|PriorityDecision| JG[Judge Agent]
+    JG -->|JudgeVerdict| OUT([TriageResult]):::io
+
+    JG -. reject / low confidence .-> HUMAN([Human review]):::review
+
+    classDef io fill:#1d4ed8,stroke:#93c5fd,color:#fff;
+    classDef store fill:#374151,stroke:#9ca3af,color:#fff;
+    classDef review fill:#92400e,stroke:#fbbf24,color:#fff;

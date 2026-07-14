@@ -1,0 +1,26 @@
+[
+  {
+    "ticket": {
+      "subject": "Charged twice for my Pro plan",
+      "body": "Hi, I see two charges of $20 on my card this month. Please fix and refund one.",
+      "customer_tier": "pro",
+      "metadata": {"channel": "email", "order_id": "INV-8841"}
+    },
+    "category": "billing",
+    "priority": "P2",
+    "assigned_queue": "billing",
+    "escalate": false
+  },
+  {
+    "ticket": {
+      "subject": "URGENT: production is down",
+      "body": "Our whole team can't log in, API returns 500. We are an enterprise customer.",
+      "customer_tier": "enterprise",
+      "metadata": {"channel": "phone"}
+    },
+    "category": "technical",
+    "priority": "P1",
+    "assigned_queue": "infra",
+    "escalate": true
+  }
+]

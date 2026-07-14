@@ -1,0 +1,24 @@
+# Core API + data contracts (needed from Week 2)
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2.6
+
+# Agents / LLM (needed from Week 6) — pick ONE provider, uncomment when ready
+# openai>=1.30
+# anthropic>=0.25
+
+# Orchestration (course stack) — uncomment from Week 6
+# langchain>=0.2
+# langgraph>=0.1
+
+# RAG (needed from Week 4-5) — course stack: ChromaDB (local) or Pinecone (cloud)
+# chromadb>=0.5
+# sentence-transformers>=2.7   # local embeddings, no API key needed
+
+# Evaluation (course stack) — uncomment from Week 8
+# ragas>=0.1
+# deepeval>=0.21
+
+# Testing
+pytest>=8.0
+httpx>=0.27   # used by FastAPI's TestClient
