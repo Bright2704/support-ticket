@@ -91,7 +91,8 @@ export default function Home() {
         <h1>Ticket Triage Console</h1>
         <p>
           ส่ง ticket (ไทยหรืออังกฤษ) แล้วระบบจะจัดหมวด กำหนดความด่วน เลือกคิว และอ้างอิงนโยบาย
-          โดยอัตโนมัติ — ประมวลผลจริงผ่าน pipeline แบบ multi-agent (rule-based, ไม่ต้องใช้ API key)
+          โดยอัตโนมัติ — ประมวลผลผ่าน pipeline แบบ multi-agent ด้วย LLM (Groq) เมื่อตั้งค่า API key
+          และถอยกลับเป็น rule-based อัตโนมัติเมื่อไม่มีคีย์
         </p>
       </header>
 
@@ -173,7 +174,16 @@ export default function Home() {
                   <Badge className="ok">ปกติ</Badge>
                 )}
                 {result.is_multi_issue && <Badge>หลายประเด็น</Badge>}
+                <Badge className={result.engine === "llm" ? "cat" : ""}>
+                  {result.engine === "llm" ? "🤖 LLM" : "⚙️ rule-based"}
+                </Badge>
               </div>
+
+              {result.engine_note && (
+                <p className="small muted" style={{ marginTop: -4, marginBottom: 8 }}>
+                  {result.engine_note}
+                </p>
+              )}
 
               <dl className="kv">
                 <dt>Sub-intent</dt>

@@ -25,7 +25,7 @@ from ..schemas import (
     TicketInput,
     TriageResult,
 )
-from . import rules
+from . import policy_rag, rules
 
 
 def run_router(ticket: TicketInput) -> RouterOutput:
@@ -61,12 +61,11 @@ def run_expert(ticket: TicketInput, routed: RouterOutput) -> list[ExpertSignal]:
 
 
 def run_policy_rag(ticket: TicketInput, routed: RouterOutput) -> list[PolicyHit]:
+    """Policy RAG agent — real vector retrieval (see agents/policy_rag.py)."""
     tier = ticket.customer_tier.value if ticket.customer_tier else None
-    matched = rules.match_policies(routed.category.value, ticket.subject, ticket.body, tier)
-    return [
-        PolicyHit(policy_id=p["policy_id"], title=p["title"], snippet=p["snippet"], score=1.0)
-        for p in matched
-    ]
+    return policy_rag.retrieve_for_ticket(
+        ticket.subject, ticket.body, routed.category.value, tier
+    )
 
 
 def run_priority(
@@ -98,6 +97,62 @@ def run_judge(
     # Lower confidence a bit when the judge is unhappy or the router was unsure.
     adjusted = routed.confidence if approved else max(0.0, routed.confidence - 0.3)
     return JudgeVerdict(approved=approved, issues=issues, adjusted_confidence=round(adjusted, 2))
+
+
+def triage_auto(ticket: TicketInput) -> TriageResult:
+    """Use the LLM pipeline when configured; fall back to rules otherwise.
+
+    This is what the API calls. It never raises on LLM problems — it degrades
+    to the deterministic rule-based pipeline so the service stays up.
+    """
+    from ..config import load_llm_config
+
+    cfg = load_llm_config()
+    if not cfg.configured:
+        return triage(ticket)
+
+    try:
+        return _triage_llm(ticket)
+    except Exception:  # noqa: BLE001 — any LLM/network error -> safe fallback
+        return triage(ticket)
+
+
+def _triage_llm(ticket: TicketInput) -> TriageResult:
+    from . import llm_agents
+
+    routed = llm_agents.route(ticket)
+    try:
+        signals = llm_agents.expert(ticket, routed)
+    except Exception:  # noqa: BLE001 — expert is advisory; rules fallback
+        signals = run_expert(ticket, routed)
+    policies = run_policy_rag(ticket, routed)  # vector RAG
+    decision, cited = llm_agents.score_priority(ticket, routed, policies)
+    verdict = llm_agents.judge(routed, decision, cited)
+
+    escalate = decision.escalate and bool(cited)
+    signal_note = ", ".join(f"{s.signal}={s.value}" for s in signals if s.value) if signals else ""
+    notes = (
+        f"[LLM] router={routed.category.value}/{routed.sub_intent} "
+        f"(conf {routed.confidence}); priority: {decision.justification}"
+    )
+    if signal_note:
+        notes += f"; expert: {signal_note}"
+    if verdict.issues:
+        notes += f"; JUDGE FLAGS: {', '.join(verdict.issues)}"
+    if routed.is_multi_issue:
+        notes += "; multi-issue ticket — review manually"
+
+    return TriageResult(
+        category=routed.category,
+        sub_intent=routed.sub_intent,
+        priority=decision.priority,
+        assigned_queue=rules.assign_queue(routed.category.value),
+        suggested_macro_id=rules.suggest_macro(routed.category.value),
+        internal_notes=notes,
+        policy_citations=cited,
+        confidence=verdict.adjusted_confidence,
+        escalate=escalate,
+    )
 
 
 def triage(ticket: TicketInput) -> TriageResult:

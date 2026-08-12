@@ -179,17 +179,19 @@ LLM_MODEL    = (เช่น gpt-4o-mini หรือ claude-3-5-sonnet)
 
 ## 8. Checklist งานที่ต้องทำ (เรียงตามลำดับ)
 
-- [ ] **Setup:** เพิ่ม env config (`LLM_PROVIDER/API_KEY/MODEL`) + `.env.example` + ใส่ `.env` ใน `.gitignore`
-- [ ] เขียน `app/agents/llm_client.py` — `call_llm(system, user, schema) -> dict` (provider-agnostic, structured output, retry)
-- [ ] **RAG:** เขียน `app/agents/policy_rag.py` — ingest `data/policy_kb.json` → ChromaDB → `search_policies() -> list[PolicyHit]`
-- [ ] แทนที่ `classify()` ด้วย LLM Intent Router (คง signature เดิม)
-- [ ] แทนที่ domain expert ด้วย LLM (ต่อหมวด)
-- [ ] แทนที่ `decide_priority()` ด้วย LLM Priority Scorer (อ่าน policy hits)
-- [ ] แทนที่ `run_judge()` ด้วย LLM Judge
-- [ ] ใส่ **fallback → rule-based** ทุกจุดเมื่อไม่มี key/LLM ล้มเหลว
-- [ ] เขียน `/evaluate` จริง — รัน pipeline กับ gold dataset แล้ววัดตามข้อ 1.3
-- [ ] เชื่อมเว็บ (`web/app/api/triage/route.js`) ให้ proxy ไป FastAPI `/tickets/triage` (แทนตรรกะ JS) หรือเรียก LLM ฝั่ง server ของ Next เอง
-- [ ] เขียนเทสต์: unit (แต่ละ agent), integration (pipeline), และ eval report ผ่านเกณฑ์
+- [x] **Setup:** env config (`LLM_PROVIDER/API_KEY/MODEL`) + `.env.example` + `.env` ใน `.gitignore`
+- [x] เขียน `app/agents/llm_client.py` — provider-agnostic, JSON mode, retry
+- [x] **RAG:** `app/agents/policy_rag.py` — vector search (TF-IDF cosine + metadata filter, รองรับ ChromaDB via `RAG_BACKEND=chroma`) → `search()/retrieve_for_ticket() -> list[PolicyHit]`
+- [x] แทนที่ `classify()` ด้วย LLM Intent Router (`llm_agents.route`)
+- [x] แทนที่ domain expert ด้วย LLM (`llm_agents.expert`)
+- [x] แทนที่ `decide_priority()` ด้วย LLM Priority Scorer (`llm_agents.score_priority`, อ่าน policy hits)
+- [x] แทนที่ `run_judge()` ด้วย LLM Judge (`llm_agents.judge`)
+- [x] **fallback → rule-based** ทุกจุดเมื่อไม่มี key/LLM ล้มเหลว (`pipeline.triage_auto`)
+- [x] `/evaluate` จริง — `app/agents/evaluate.py` รัน pipeline กับ gold 30 ตัว วัดตามข้อ 1.3
+- [x] Prompt versioning — `app/agents/prompts/*_v1.txt`
+- [x] เว็บ (`web/`) เรียก LLM ฝั่ง server ของ Next เอง (มี engine badge)
+- [x] เทสต์: unit (RAG + แต่ละ agent), integration/eval (`tests/test_rag.py`, `test_llm_agents.py`, `test_evaluate.py`)
+- [ ] **รออาจารย์:** gold tickets + policy KB จริง (ตอนนี้ synthetic), ยืนยัน schema, และ dashboard UI เต็ม
 
 ---
 

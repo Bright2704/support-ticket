@@ -20,21 +20,26 @@ _KB_PATH = os.path.join(_DATA_DIR, "policy_kb.json")
 # Keyword cues per category. Order matters: first category with the most hits
 # wins. This is a deliberately simple stand-in for the LLM Intent Router.
 CATEGORY_KEYWORDS: dict[str, list[str]] = {
-    "billing": ["charge", "charged", "invoice", "bill", "billed", "payment", "card", "subscription", "overcharged"],
-    "technical": ["error", "bug", "down", "outage", "500", "crash", "not working", "can't log in", "cannot log in", "broken", "api"],
-    "refund": ["refund", "money back", "return", "cancel order", "reimburse"],
-    "account": ["password", "reset", "login", "log in", "2fa", "locked out", "account access", "username"],
-    "shipping": ["shipping", "delivery", "tracking", "package", "parcel", "courier", "not arrived"],
+    "billing": ["charge", "charged", "invoice", "bill", "billed", "payment", "card", "subscription", "overcharged",
+                "เรียกเก็บ", "ค่าบริการ", "บิล", "ใบแจ้งหนี้", "ตัดเงิน", "ตัดบัตร", "คิดเงิน", "ชำระเงิน"],
+    "technical": ["error", "bug", "down", "outage", "500", "crash", "not working", "can't log in", "cannot log in", "broken", "api",
+                  "ล่ม", "ใช้งานไม่ได้", "ระบบล่ม", " error", "ขัดข้อง", "เข้าไม่ได้", "แอปพัง", "บั๊ก"],
+    "refund": ["refund", "money back", "return", "cancel order", "reimburse",
+               "คืนเงิน", "ขอเงินคืน", "ยกเลิกคำสั่งซื้อ", "รีฟันด์"],
+    "account": ["password", "reset", "login", "log in", "2fa", "locked out", "account access", "username",
+                "รหัสผ่าน", "ลืมรหัส", "ล็อกอิน", "เข้าสู่ระบบ", "บัญชีถูกล็อก", "รีเซ็ตรหัส"],
+    "shipping": ["shipping", "delivery", "tracking", "package", "parcel", "courier", "not arrived",
+                 "จัดส่ง", "พัสดุ", "ติดตามพัสดุ", "ของยังไม่มาถึง", "ขนส่ง", "เลขพัสดุ", "ไม่ได้รับของ"],
 }
 
 # Sub-intent cues -> a short label.
 SUB_INTENT_KEYWORDS: dict[str, list[str]] = {
-    "double_charge": ["charged twice", "double charge", "two charges", "billed twice"],
-    "wrong_amount": ["wrong amount", "overcharged", "incorrect charge"],
-    "service_outage": ["outage", "down", "500", "cannot log in", "can't log in", "not working"],
-    "password_reset": ["password", "reset", "locked out", "2fa"],
-    "refund_request": ["refund", "money back", "reimburse"],
-    "lost_package": ["not arrived", "lost", "missing package", "where is my"],
+    "double_charge": ["charged twice", "double charge", "two charges", "billed twice", "ตัดเงินสองครั้ง", "เรียกเก็บซ้ำ", "คิดเงินสองรอบ"],
+    "wrong_amount": ["wrong amount", "overcharged", "incorrect charge", "ยอดผิด", "เก็บเงินเกิน", "จำนวนเงินผิด"],
+    "service_outage": ["outage", "down", "500", "cannot log in", "can't log in", "not working", "ล่ม", "ระบบล่ม", "ใช้งานไม่ได้", "เข้าไม่ได้"],
+    "password_reset": ["password", "reset", "locked out", "2fa", "รหัสผ่าน", "ลืมรหัส", "รีเซ็ตรหัส", "บัญชีถูกล็อก"],
+    "refund_request": ["refund", "money back", "reimburse", "คืนเงิน", "ขอเงินคืน"],
+    "lost_package": ["not arrived", "lost", "missing package", "where is my", "ยังไม่มาถึง", "ของหาย", "พัสดุหาย", "ไม่ได้รับของ"],
 }
 
 PRIORITY_ORDER = ["P1", "P2", "P3", "P4"]

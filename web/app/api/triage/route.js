@@ -1,7 +1,11 @@
 // POST /api/triage  — { subject, body, customer_tier } -> TriageResult
-// Runs the rule-based pipeline (lib/triage.mjs). No API key needed.
+//
+// Uses the LLM pipeline when an API key is configured (see web/.env.local),
+// otherwise falls back to the rule-based pipeline. Either way the response
+// shape is the same, plus an `engine` field ("llm" | "rules") so the UI can
+// show which one processed the ticket.
 
-import { triage } from "../../../lib/triage.mjs";
+import { triageLLM } from "../../../lib/llmTriage.mjs";
 
 export async function POST(request) {
   let payload;
@@ -18,11 +22,14 @@ export async function POST(request) {
     return Response.json({ error: "subject or body is required" }, { status: 422 });
   }
 
-  const result = triage({
-    subject,
-    body,
-    customer_tier: payload.customer_tier ?? null,
-  });
-
-  return Response.json(result);
+  try {
+    const result = await triageLLM({
+      subject,
+      body,
+      customer_tier: payload.customer_tier ?? null,
+    });
+    return Response.json(result);
+  } catch (err) {
+    return Response.json({ error: String(err.message || err) }, { status: 500 });
+  }
 }

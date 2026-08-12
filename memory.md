@@ -27,22 +27,26 @@ TicketInput → Intent Router → Domain Expert → Policy RAG → Priority Scor
 - Orchestration: **LangChain / LangGraph** (จะใช้ตอน Week 6)
 - Vector DB: **ChromaDB** (local) หรือ Pinecone (cloud)
 - Eval: **Ragas / DeepEval**, trace ด้วย **LangSmith**
-- LLM: OpenAI หรือ Anthropic — **ยังไม่ตัดสินใจ / ยังไม่มี API key** ⬅️ ต้องเลือก
+- LLM: **Groq** (เลือกแล้ว, OpenAI-compatible, ฟรี) — ต่อโค้ดเสร็จแล้ว รอแค่ใส่ API key
+  ยังรองรับ OpenAI/Ollama ได้ด้วย (provider-agnostic) · วิธีตั้งค่า: `SETUP_LLM.md`
 
-## 4. สถานะปัจจุบัน (อัปเดต 2026-06-30)
+## 4. สถานะปัจจุบัน (อัปเดต 2026-07-14)
 
 | Week | Deliverable | สถานะ |
 |------|-------------|-------|
 | 2 | Data schema + system flow diagram | ✅ เสร็จ |
-| 3 | /triage stub | ✅ เกินเป้า — ตอนนี้เป็น pipeline จริง (rule-based) |
-| 4-5 | Policy RAG (vector) | ⬜ ตอนนี้เป็น keyword match ชั่วคราว |
-| 6-7 | Router + expert agents (LLM) | ⬜ ตอนนี้เป็น rule-based |
-| 8 | Judge + eval report | 🟡 Judge มีแล้ว (rule-based), eval ยังเป็น stub |
-| 9-12 | Dashboard UI | 🟡 มีเว็บ demo แล้ว (Next.js, ไทย/อังกฤษ) ใน `web/` |
+| 3 | /triage stub | ✅ เกินเป้า — เป็น pipeline จริง |
+| 4-5 | Policy RAG (vector) | ✅ เสร็จ — vector search (TF-IDF cosine, รองรับ ChromaDB) `app/agents/policy_rag.py` |
+| 6-7 | Router + expert agents (LLM) | ✅ Router/Expert/Priority/Judge เป็น LLM (Groq) ครบ + fallback |
+| 8 | Judge + eval report | ✅ `/evaluate` จริง วัดกับ gold 30 ตัว (cat 100%, prio±1 90%, esc recall 100% บน rule engine) |
+| 9-12 | Dashboard UI | 🟡 เว็บ demo (Next.js ไทย/อังกฤษ) ใน `web/` — ยังเป็น demo ไม่ใช่ dashboard เต็ม |
 
-**สำคัญ:** ตอนนี้มี **MVP ที่รันได้จริงแบบ offline (ไม่ต้องใช้ API key)** — เป็น rule-based
-ทุก agent เป็นฟังก์ชันใน `app/agents/rules.py` พอได้ API key แล้วค่อยสลับไส้ในเป็น LLM
-โดย **schema และ API ไม่ต้องเปลี่ยน**
+**สำคัญ:** รันได้ 2 โหมด — **offline rule-based** (ไม่ต้องมี key) และ **LLM (Groq)** เมื่อมี key
+โดย schema/API เดิมไม่เปลี่ยน. RAG เป็น vector search จริงแล้ว (ไม่ใช่ keyword match)
+Prompt แยกเป็นไฟล์ version ที่ `app/agents/prompts/*_v1.txt`
+
+**ยังค้าง:** gold tickets + policy KB ของ *อาจารย์จริง* (ตอนนี้เป็น synthetic placeholder),
+ยืนยัน schema กับ pre-defined shapes, และ dashboard UI เต็ม
 
 ## 5. แผนผังไฟล์
 

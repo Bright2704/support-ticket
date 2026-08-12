@@ -14,7 +14,8 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from .agents import pipeline, rules
+from .agents import evaluate as evaluation
+from .agents import pipeline, policy_rag
 from .schemas import (
     EvaluationReport,
     PolicyHit,
@@ -37,39 +38,22 @@ def health() -> dict[str, str]:
 @app.post("/tickets/triage", response_model=TriageResult)
 def triage(ticket: TicketInput) -> TriageResult:
     """Single ticket -> routing decision."""
-    return pipeline.triage(ticket)
+    return pipeline.triage_auto(ticket)
 
 
 @app.post("/tickets/triage/batch", response_model=list[TriageResult])
 def triage_batch(tickets: list[TicketInput]) -> list[TriageResult]:
     """Batch version of /tickets/triage."""
-    return [pipeline.triage(t) for t in tickets]
+    return [pipeline.triage_auto(t) for t in tickets]
 
 
 @app.get("/policies/search", response_model=list[PolicyHit])
 def policies_search(q: str, k: int = 5) -> list[PolicyHit]:
-    """RAG debug endpoint — returns the policy chunks a query would retrieve.
-
-    Rule-based keyword match for now; swap for vector search in weeks 4-5.
-    """
-    hits = []
-    for cat in ["billing", "technical", "refund", "account", "shipping", "other"]:
-        for p in rules.match_policies(cat, q, q, None):
-            if p["policy_id"] not in {h.policy_id for h in hits}:
-                hits.append(PolicyHit(policy_id=p["policy_id"], title=p["title"], snippet=p["snippet"], score=1.0))
-    return hits[:k]
+    """RAG debug endpoint — vector-search the policy KB for a free-text query."""
+    return policy_rag.search(q, k=k)
 
 
 @app.post("/evaluate", response_model=EvaluationReport)
 def evaluate() -> EvaluationReport:
-    """Run the pipeline over the gold dataset and report accuracy.
-
-    Stub for now; implemented in week 8 once the pipeline exists.
-    """
-    return EvaluationReport(
-        n=0,
-        category_accuracy=0.0,
-        priority_within_one_level=0.0,
-        escalation_recall=0.0,
-        passed=False,
-    )
+    """Run the pipeline over the gold dataset and report accuracy (PRD section 7)."""
+    return evaluation.run_evaluation()

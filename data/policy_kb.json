@@ -5,7 +5,7 @@
       "title": "Enterprise outage SLA",
       "snippet": "Enterprise customers reporting a full service outage must be set to P1 and escalated to the infra on-call within 15 minutes.",
       "applies_to": ["technical"],
-      "triggers": ["outage", "down", "500", "cannot log in", "can't log in", "not working"],
+      "triggers": ["outage", "down", "500", "cannot log in", "can't log in", "not working", "ล่ม", "ระบบล่ม", "ใช้งานไม่ได้", "เข้าไม่ได้"],
       "tier": ["enterprise"],
       "priority": "P1",
       "escalate": true
@@ -15,7 +15,7 @@
       "title": "Billing dispute handling",
       "snippet": "Billing disputes (double charge, wrong amount) are routed to the billing queue at P2. Refund eligibility is checked before any credit.",
       "applies_to": ["billing"],
-      "triggers": ["charged twice", "double charge", "wrong amount", "overcharged", "billed"],
+      "triggers": ["charged twice", "double charge", "wrong amount", "overcharged", "billed", "ตัดเงินสองครั้ง", "เรียกเก็บซ้ำ", "เก็บเงินเกิน", "ยอดผิด"],
       "priority": "P2",
       "escalate": false
     },
@@ -24,7 +24,7 @@
       "title": "Refund request window",
       "snippet": "Refund requests within 30 days are routed to the refunds queue at P3. Outside the window requires lead approval.",
       "applies_to": ["refund"],
-      "triggers": ["refund", "money back", "cancel order", "return"],
+      "triggers": ["refund", "money back", "cancel order", "return", "คืนเงิน", "ขอเงินคืน", "ยกเลิกคำสั่งซื้อ"],
       "priority": "P3",
       "escalate": false
     },
@@ -33,7 +33,7 @@
       "title": "Account access default",
       "snippet": "Account/login issues (non-outage) default to the account queue at P3.",
       "applies_to": ["account"],
-      "triggers": ["password", "reset", "login", "2fa", "locked out"],
+      "triggers": ["password", "reset", "login", "2fa", "locked out", "รหัสผ่าน", "ลืมรหัส", "รีเซ็ตรหัส", "บัญชีถูกล็อก", "เข้าสู่ระบบ"],
       "priority": "P3",
       "escalate": false
     },
@@ -42,7 +42,7 @@
       "title": "Shipping inquiry default",
       "snippet": "Shipping/delivery inquiries default to the logistics queue at P4 unless lost/damaged, then P3.",
       "applies_to": ["shipping"],
-      "triggers": ["shipping", "delivery", "tracking", "package", "not arrived", "lost", "damaged"],
+      "triggers": ["shipping", "delivery", "tracking", "package", "not arrived", "lost", "damaged", "จัดส่ง", "พัสดุ", "ติดตามพัสดุ", "ของยังไม่มาถึง", "ของหาย", "ไม่ได้รับของ"],
       "priority": "P4",
       "escalate": false
     },
@@ -51,7 +51,7 @@
       "title": "Angry / churn-risk escalation",
       "snippet": "Tickets with strong negative sentiment or explicit cancellation threats are bumped one priority level and flagged for lead review.",
       "applies_to": ["billing", "technical", "refund", "account", "shipping", "other"],
-      "triggers": ["angry", "furious", "unacceptable", "terrible", "cancel my account", "lawyer", "sue"],
+      "triggers": ["angry", "furious", "unacceptable", "terrible", "cancel my account", "lawyer", "sue", "โกรธ", "แย่มาก", "รับไม่ได้", "ยกเลิกบัญชี", "ฟ้อง", "ทนายความ"],
       "priority": null,
       "escalate": true
     },
