@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Backend - FastAPI
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticket-backend
+    ports:
+      - "8001:8000"  # เปลี่ยน 8001 เป็น port ที่ต้องการ
+    restart: unless-stopped
+    environment:
+      - LLM_PROVIDER=none  # ใช้ rule-based (ไม่ต้องมี API key)
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend - Next.js
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: ticket-frontend
+    ports:
+      - "3001:3000"  # เปลี่ยน 3001 เป็น port ที่ต้องการ
+    restart: unless-stopped
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
