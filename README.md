@@ -38,11 +38,11 @@ pytest
 | Week | Deliverable | สถานะ |
 |------|-------------|-------|
 | 2 | Data schema + system flow diagram | ✅ เสร็จ |
-| 3 | /triage stub | ✅ มีแล้ว |
-| 4-5 | Policy RAG ingestion | ⬜ |
-| 6-7 | Router + expert agents | ⬜ |
-| 8 | Judge + eval report | ⬜ |
-| 9-12 | Agent dashboard UI | ⬜ |
+| 3 | /triage stub | ✅ เสร็จ |
+| 4-5 | Policy RAG ingestion | ✅ เสร็จ (`app/agents/policy_rag.py`) |
+| 6-7 | Router + expert agents | ✅ เสร็จ (`app/agents/llm_agents.py`) |
+| 8 | Judge + eval report | ✅ เสร็จ (`app/agents/evaluate.py`) |
+| 9-12 | Agent dashboard UI | ✅ เสร็จ (`web/`) |
 
 ดูวิธีทำแต่ละขั้นใน [`docs/HOW_TO_BUILD.md`](docs/HOW_TO_BUILD.md)
 

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Support Ticket Triage - Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            min-height: 100vh;
+            padding: 50px 70px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .slide.active { display: flex; flex-direction: column; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            color: #94a3b8;
+            margin-bottom: 25px;
+            font-weight: 400;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: #fbbf24;
+            margin: 15px 0 10px;
+        }
+
+        p, li {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+
+        ul { list-style: none; margin: 15px 0; }
+        ul li { padding: 8px 0 8px 25px; position: relative; }
+        ul li::before { content: "•"; position: absolute; left: 0; color: #60a5fa; }
+
+        .file-path {
+            background: #1e40af;
+            color: #93c5fd;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-family: monospace;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        pre {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            overflow-x: auto;
+            border-left: 4px solid #3b82f6;
+        }
+
+        code {
+            font-family: 'Consolas', monospace;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .comment { color: #6b7280; }
+        .keyword { color: #f472b6; }
+        .string { color: #4ade80; }
+        .function { color: #60a5fa; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 1.1rem;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th { background: #1e40af; font-weight: 600; }
+
+        .box {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .box-green { border-left: 4px solid #10b981; background: #064e3b; }
+        .box-blue { border-left: 4px solid #3b82f6; background: #1e3a5f; }
+        .box-yellow { border-left: 4px solid #f59e0b; background: #78350f; }
+        .box-purple { border-left: 4px solid #8b5cf6; background: #4c1d95; }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .badge-blue { background: #2563eb; }
+        .badge-green { background: #059669; }
+        .badge-red { background: #dc2626; }
+        .badge-yellow { background: #d97706; color: #1e293b; }
+        .badge-purple { background: #7c3aed; }
+
+        strong { color: #fbbf24; }
+
+        .page-num {
+            position: fixed;
+            bottom: 25px;
+            right: 35px;
+            font-size: 1.1rem;
+            color: #64748b;
+        }
+
+        .progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: width 0.3s;
+        }
+
+        .nav-hint {
+            position: fixed;
+            bottom: 25px;
+            left: 35px;
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1e3a8a 0%, #4c1d95 100%);
+        }
+
+        .title-slide h1 { font-size: 3.5rem; }
+        .title-slide h2 { font-size: 2rem; color: #a5b4fc; }
+
+        .flow-box {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1rem;
+            white-space: pre;
+            color: #94a3b8;
+        }
+
+        .feature-card {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .feature-icon {
+            font-size: 1.8rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .simple-explain {
+            background: linear-gradient(135deg, #059669 0%, #0d9488 100%);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin: 15px 0;
+            font-size: 1.2rem;
+        }
+
+        .screenshot {
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #334155;
+        }
+
+        .screenshot-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .ai-card {
+            background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+
+        .ai-card h3 { color: #e9d5ff; margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="progress" id="progress"></div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide title-slide active" data-slide="1">
+        <div style="font-size: 4rem; margin-bottom: 20px;">🎫</div>
+        <h1>Support Ticket Triage</h1>
+        <h2>ระบบคัดแยก Ticket อัตโนมัติ ด้วย AI</h2>
+        <p style="margin-top: 30px; color: #94a3b8; font-size: 1.3rem;">
+            Multi-Agent System + NLP + Vector Search
+        </p>
+    </div>
+
+    <!-- Slide 2: What is this? -->
+    <div class="slide" data-slide="2">
+        <h1>🤔 ระบบนี้คืออะไร?</h1>
+        <h2>ช่วยเจ้าหน้าที่ Support ทำงานเร็วขึ้น</h2>
+
+        <div class="two-col">
+            <div>
+                <h3>ปัญหาเดิม</h3>
+                <ul>
+                    <li>Ticket เข้ามาเยอะ ต้องอ่านทีละใบ</li>
+                    <li>ไม่รู้ว่าเรื่องไหนด่วน</li>
+                    <li>ส่งไปผิดทีมบ่อย</li>
+                </ul>
+            </div>
+            <div>
+                <h3>ระบบนี้ช่วย</h3>
+                <ul>
+                    <li><strong>จัดหมวดหมู่ให้</strong> (billing, technical...)</li>
+                    <li><strong>บอกความเร่งด่วน</strong> (P1-P4)</li>
+                    <li><strong>ส่งไปทีมที่ถูกต้อง</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="simple-explain">
+            💡 <strong>พูดง่ายๆ:</strong> ลูกค้าส่ง ticket มา → AI อ่านแล้วบอกว่า "เรื่องนี้เกี่ยวกับบิล ด่วนระดับ 2 ส่งไปทีมบัญชี"
+        </div>
+    </div>
+
+    <!-- Slide 3: AI Used -->
+    <div class="slide" data-slide="3">
+        <h1>🤖 AI ที่ใช้ในระบบ</h1>
+        <h2>เทคนิค AI/ML หลักๆ</h2>
+
+        <div class="two-col">
+            <div>
+                <div class="ai-card">
+                    <h3>1. TF-IDF (Text Classification)</h3>
+                    <p>แปลงข้อความเป็น Vector แล้วคำนวณความคล้าย</p>
+                    <p style="color: #c4b5fd; margin-top: 10px;"><strong>ใช้ตรงไหน:</strong> จัดหมวดหมู่ + ค้นหา Policy</p>
+                </div>
+                <div class="ai-card">
+                    <h3>2. Keyword Matching (NLP)</h3>
+                    <p>หาคำสำคัญในข้อความ ทั้งภาษาไทย/อังกฤษ</p>
+                    <p style="color: #c4b5fd; margin-top: 10px;"><strong>ใช้ตรงไหน:</strong> Intent Router</p>
+                </div>
+            </div>
+            <div>
+                <div class="ai-card">
+                    <h3>3. Multi-Agent Architecture</h3>
+                    <p>แบ่งงานให้ Agent หลายตัวทำงานร่วมกัน</p>
+                    <p style="color: #c4b5fd; margin-top: 10px;"><strong>Agent:</strong> Router → Expert → RAG → Scorer → Judge</p>
+                </div>
+                <div class="ai-card">
+                    <h3>4. LLM (Optional)</h3>
+                    <p>ใช้ Groq/OpenAI เพิ่มความฉลาด (ถ้ามี API Key)</p>
+                    <p style="color: #c4b5fd; margin-top: 10px;"><strong>Model:</strong> Llama 3 / GPT-4o-mini</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Features -->
+    <div class="slide" data-slide="4">
+        <h1>✨ ระบบทำอะไรได้บ้าง?</h1>
+        <h2>6 ฟีเจอร์หลัก</h2>
+
+        <div class="two-col">
+            <div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏷️</div>
+                    <div>
+                        <strong>จัดหมวดหมู่อัตโนมัติ</strong><br>
+                        <span style="color: #94a3b8;">billing, technical, refund, account, shipping</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚨</div>
+                    <div>
+                        <strong>กำหนดความเร่งด่วน</strong><br>
+                        <span style="color: #94a3b8;">P1 (ด่วนมาก) → P4 (ปกติ)</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <div>
+                        <strong>ส่งต่อทีมที่ถูกต้อง</strong><br>
+                        <span style="color: #94a3b8;">billing → ทีมบัญชี, technical → ทีม infra</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <div>
+                        <strong>อ้างอิง Policy</strong><br>
+                        <span style="color: #94a3b8;">บอกว่าตัดสินจากกฎข้อไหน</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚠️</div>
+                    <div>
+                        <strong>แจ้ง Escalate</strong><br>
+                        <span style="color: #94a3b8;">เรื่องไหนต้องส่งหัวหน้าดูด่วน</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <div>
+                        <strong>บอกความมั่นใจ</strong><br>
+                        <span style="color: #94a3b8;">confidence score 0-100%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Demo UI -->
+    <div class="slide" data-slide="5">
+        <h1>🖥️ หน้าตาระบบ</h1>
+        <h2>Web UI สำหรับส่ง Ticket</h2>
+
+        <div class="screenshot-container">
+            <img src="img/ui-main.png" class="screenshot" style="max-height: 420px;">
+        </div>
+
+        <div class="simple-explain">
+            💡 <strong>วิธีใช้:</strong> กรอกหัวข้อ + เนื้อหา + เลือกระดับลูกค้า → กด "ประมวลผล Triage"
+        </div>
+    </div>
+
+    <!-- Slide 6: How it works -->
+    <div class="slide" data-slide="6">
+        <h1>🔄 Multi-Agent Pipeline</h1>
+        <h2>5 AI Agents ทำงานร่วมกัน</h2>
+
+        <div class="flow-box">
+  ┌──────────────┐
+  │  1. รับ Ticket │  ← ลูกค้าส่งมา
+  └──────┬───────┘
+         ▼
+  ┌──────────────┐
+  │ 2. Intent    │  ← <span style="color:#a78bfa;">AI Agent #1</span> - จัดหมวดหมู่ด้วย NLP
+  │    Router    │
+  └──────┬───────┘
+         ▼
+  ┌──────────────┐
+  │ 3. Policy    │  ← <span style="color:#a78bfa;">AI Agent #2</span> - ค้นหาด้วย TF-IDF Vector Search
+  │    RAG       │
+  └──────┬───────┘
+         ▼
+  ┌──────────────┐
+  │ 4. Priority  │  ← <span style="color:#a78bfa;">AI Agent #3</span> - ให้คะแนนตาม Policy
+  │    Scorer    │
+  └──────┬───────┘
+         ▼
+  ┌──────────────┐
+  │ 5. Judge     │  ← <span style="color:#a78bfa;">AI Agent #4</span> - ตรวจสอบความถูกต้อง
+  └──────┬───────┘
+         ▼
+     ส่งผลลัพธ์ ✅
+        </div>
+    </div>
+
+    <!-- Slide 7: TF-IDF Explanation -->
+    <div class="slide" data-slide="7">
+        <h1>🧠 TF-IDF คืออะไร?</h1>
+        <h2>เทคนิค AI สำหรับวิเคราะห์ข้อความ</h2>
+
+        <div class="two-col">
+            <div>
+                <div class="box box-purple">
+                    <h3>TF = Term Frequency</h3>
+                    <p>คำนี้ปรากฏกี่ครั้งใน document นี้</p>
+                    <p style="margin-top: 10px; color: #c4b5fd;">
+                        เช่น "ระบบล่ม" ปรากฏ 3 ครั้ง → TF สูง
+                    </p>
+                </div>
+                <div class="box box-purple">
+                    <h3>IDF = Inverse Document Frequency</h3>
+                    <p>คำนี้หายากแค่ไหนใน corpus ทั้งหมด</p>
+                    <p style="margin-top: 10px; color: #c4b5fd;">
+                        เช่น "Enterprise" หายาก → IDF สูง
+                    </p>
+                </div>
+            </div>
+            <div>
+                <div class="box">
+                    <h3>วิธีใช้ในระบบนี้</h3>
+                    <ol style="padding-left: 20px;">
+                        <li>แปลง Ticket เป็น TF-IDF Vector</li>
+                        <li>แปลง Policy เป็น TF-IDF Vector</li>
+                        <li>คำนวณ Cosine Similarity</li>
+                        <li>เลือก Policy ที่ "คล้าย" มากที่สุด</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="simple-explain">
+            💡 <strong>พูดง่ายๆ:</strong> TF-IDF = วิธีหาว่าข้อความไหน "คล้ายกัน" โดยดูจากคำที่ใช้
+        </div>
+    </div>
+
+    <!-- Slide 8: Tech Stack -->
+    <div class="slide" data-slide="8">
+        <h1>🛠️ Tech Stack</h1>
+        <h2>เครื่องมือที่ใช้</h2>
+
+        <table>
+            <tr>
+                <th>ส่วน</th>
+                <th>เครื่องมือ</th>
+                <th>ทำไมถึงใช้</th>
+            </tr>
+            <tr>
+                <td><span class="badge badge-blue">Backend</span></td>
+                <td>FastAPI (Python)</td>
+                <td>เขียนง่าย, สร้าง API ได้เร็ว</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-green">ตรวจข้อมูล</span></td>
+                <td>Pydantic</td>
+                <td>เช็คว่าข้อมูลถูกต้องอัตโนมัติ</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-purple">AI/NLP</span></td>
+                <td>TF-IDF + Keyword Matching</td>
+                <td>วิเคราะห์ข้อความ ค้นหา Policy</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-yellow">LLM (Optional)</span></td>
+                <td>Groq / OpenAI</td>
+                <td>เพิ่มความฉลาดถ้ามี API Key</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-red">Frontend</span></td>
+                <td>Next.js</td>
+                <td>UI สวย รองรับไทย/อังกฤษ</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Slide 9: Project Structure -->
+    <div class="slide" data-slide="9">
+        <h1>📁 โครงสร้างโปรเจกต์</h1>
+        <h2>ไฟล์สำคัญอยู่ตรงไหน</h2>
+
+        <pre><code>support-ticket/
+│
+├── <span class="function">app/</span>                     ← <span class="comment">โค้ดหลักอยู่ที่นี่</span>
+│   ├── <span class="string">schemas.py</span>           ← กำหนดรูปแบบข้อมูล
+│   ├── <span class="string">main.py</span>              ← API (รับ-ส่งข้อมูล)
+│   └── <span class="function">agents/</span>              ← <span class="comment">AI Agents ทั้งหมด</span>
+│       ├── <span class="string">rules.py</span>         ← NLP + Keyword Matching
+│       ├── <span class="string">policy_rag.py</span>    ← TF-IDF Vector Search
+│       ├── <span class="string">llm_agents.py</span>    ← LLM Agents (Optional)
+│       └── <span class="string">pipeline.py</span>      ← Multi-Agent Orchestration
+│
+├── <span class="function">data/</span>
+│   └── <span class="string">policy_kb.json</span>       ← ฐานข้อมูล Policy
+│
+└── <span class="function">web/</span>                     ← หน้าเว็บ UI</code></pre>
+    </div>
+
+    <!-- Slide 10: Intent Router -->
+    <div class="slide" data-slide="10">
+        <h1>🔍 Agent #1: Intent Router</h1>
+        <h2>จัดหมวดหมู่ด้วย NLP Keyword Matching</h2>
+
+        <div class="file-path">📄 app/agents/rules.py</div>
+
+        <pre><code><span class="comment"># คำสำคัญแต่ละหมวด (ไทย + อังกฤษ)</span>
+CATEGORY_KEYWORDS = {
+    <span class="string">"billing"</span>:   [<span class="string">"charge"</span>, <span class="string">"invoice"</span>, <span class="string">"ค่าบริการ"</span>, <span class="string">"บิล"</span>, <span class="string">"ตัดเงิน"</span>],
+    <span class="string">"technical"</span>: [<span class="string">"error"</span>, <span class="string">"bug"</span>, <span class="string">"ล่ม"</span>, <span class="string">"ใช้งานไม่ได้"</span>, <span class="string">"500"</span>],
+    <span class="string">"refund"</span>:    [<span class="string">"refund"</span>, <span class="string">"คืนเงิน"</span>, <span class="string">"ขอเงินคืน"</span>],
+    <span class="string">"account"</span>:   [<span class="string">"password"</span>, <span class="string">"รหัสผ่าน"</span>, <span class="string">"login"</span>, <span class="string">"ล็อกอิน"</span>],
+}</code></pre>
+
+        <div class="simple-explain">
+            💡 <strong>วิธีทำงาน:</strong> นับว่า ticket มีคำสำคัญของหมวดไหนมากที่สุด → เลือกหมวดนั้น
+        </div>
+    </div>
+
+    <!-- Slide 11: Policy RAG -->
+    <div class="slide" data-slide="11">
+        <h1>📚 Agent #2: Policy RAG</h1>
+        <h2>ค้นหา Policy ด้วย TF-IDF Vector Search</h2>
+
+        <div class="file-path">📄 app/agents/policy_rag.py</div>
+
+        <pre><code><span class="keyword">class</span> <span class="function">_TfidfStore</span>:
+    <span class="comment"># 1. สร้าง TF-IDF Vector จาก Policy ทั้งหมด</span>
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, docs):
+        self.vectors = [self._vectorize(d) <span class="keyword">for</span> d <span class="keyword">in</span> docs]
+
+    <span class="comment"># 2. ค้นหาด้วย Cosine Similarity</span>
+    <span class="keyword">def</span> <span class="function">query</span>(self, text):
+        q = self._vectorize(text)
+        scored = [(doc, self._cosine(q, vec)) <span class="keyword">for</span> doc, vec <span class="keyword">in</span> ...]
+        <span class="keyword">return</span> sorted(scored, key=<span class="keyword">lambda</span> x: x[1], reverse=<span class="keyword">True</span>)</code></pre>
+
+        <div class="simple-explain">
+            💡 <strong>พูดง่ายๆ:</strong> แปลง ticket + policy เป็นตัวเลข → หาว่าอันไหน "คล้ายกัน" มากที่สุด
+        </div>
+    </div>
+
+    <!-- Slide 12: Priority Scorer -->
+    <div class="slide" data-slide="12">
+        <h1>⚡ Agent #3: Priority Scorer</h1>
+        <h2>ให้คะแนนความเร่งด่วนตาม Policy</h2>
+
+        <div class="file-path">📄 app/agents/rules.py</div>
+
+        <pre><code><span class="keyword">def</span> <span class="function">decide_priority</span>(category, policies):
+    priority = <span class="string">"P3"</span>   <span class="comment"># เริ่มจากปกติ</span>
+    escalate = <span class="keyword">False</span>
+
+    <span class="keyword">for</span> pol <span class="keyword">in</span> policies:
+        <span class="keyword">if</span> pol[<span class="string">"priority"</span>] == <span class="string">"P1"</span>:
+            priority = <span class="string">"P1"</span>      <span class="comment"># ปรับเป็นด่วนมาก</span>
+        <span class="keyword">if</span> pol[<span class="string">"escalate"</span>]:
+            escalate = <span class="keyword">True</span>     <span class="comment"># ต้องส่งหัวหน้า</span>
+
+    <span class="keyword">return</span> priority, escalate</code></pre>
+
+        <div class="simple-explain">
+            💡 <strong>พูดง่ายๆ:</strong> ดู Policy ที่เจอ → ถ้าบอกว่า P1 ก็ให้ P1, ถ้าบอก escalate ก็ส่งหัวหน้า
+        </div>
+    </div>
+
+    <!-- Slide 13: Judge -->
+    <div class="slide" data-slide="13">
+        <h1>⚖️ Agent #4: Judge</h1>
+        <h2>ตรวจสอบความถูกต้องก่อนส่ง</h2>
+
+        <div class="file-path">📄 app/agents/pipeline.py</div>
+
+        <pre><code><span class="keyword">def</span> <span class="function">run_judge</span>(decision, policies):
+    issues = []
+
+    <span class="comment"># กฎ: ถ้าบอกว่า escalate ต้องมี policy รองรับ</span>
+    <span class="keyword">if</span> decision.escalate <span class="keyword">and not</span> policies:
+        issues.append(<span class="string">"escalation ไม่มี policy อ้างอิง"</span>)
+
+    <span class="comment"># กฎ: ถ้าให้ P1 ต้องมี policy รองรับ</span>
+    <span class="keyword">if</span> decision.priority == <span class="string">"P1"</span> <span class="keyword">and not</span> policies:
+        issues.append(<span class="string">"P1 ไม่มี policy รองรับ"</span>)
+
+    <span class="keyword">return</span> JudgeVerdict(approved=len(issues)==0)</code></pre>
+
+        <div class="simple-explain">
+            💡 <strong>พูดง่ายๆ:</strong> Judge = "ผู้ตรวจสอบ" ดูว่าการตัดสินใจมี Policy รองรับไหม
+        </div>
+    </div>
+
+    <!-- Slide 14: Demo 1 - Technical P1 -->
+    <div class="slide" data-slide="14">
+        <h1>🎯 ตัวอย่าง 1: ระบบล่ม (Enterprise)</h1>
+        <h2>กรณีด่วนมาก → P1 + Escalate</h2>
+
+        <div class="screenshot-container">
+            <img src="img/demo-technical.png" class="screenshot" style="max-height: 380px;">
+        </div>
+
+        <div class="simple-explain">
+            💡 <strong>AI ตัดสินใจ:</strong> พบคำว่า "ล่ม" + "Enterprise" → หา Policy SLA-001 → ให้ P1 + Escalate
+        </div>
+    </div>
+
+    <!-- Slide 15: Demo 2 - Account P3 -->
+    <div class="slide" data-slide="15">
+        <h1>🎯 ตัวอย่าง 2: ลืมรหัสผ่าน (Free)</h1>
+        <h2>กรณีปกติ → P3 ไม่ต้อง Escalate</h2>
+
+        <div class="screenshot-container">
+            <img src="img/demo-account.png" class="screenshot" style="max-height: 380px;">
+        </div>
+
+        <div class="simple-explain">
+            💡 <strong>AI ตัดสินใจ:</strong> พบคำว่า "รหัสผ่าน" → หมวด account → Policy SLA-004 → P3 ปกติ
+        </div>
+    </div>
+
+    <!-- Slide 16: Comparison -->
+    <div class="slide" data-slide="16">
+        <h1>📊 AI ตัดสินใจต่างกันตาม Context</h1>
+        <h2>เปรียบเทียบ 2 กรณี</h2>
+
+        <table>
+            <tr>
+                <th>รายการ</th>
+                <th style="background: #dc2626;">ระบบล่ม (Enterprise)</th>
+                <th style="background: #059669;">ลืมรหัสผ่าน (Free)</th>
+            </tr>
+            <tr>
+                <td><strong>AI พบคำสำคัญ</strong></td>
+                <td>"ล่ม", "ใช้งานไม่ได้"</td>
+                <td>"รหัสผ่าน"</td>
+            </tr>
+            <tr>
+                <td><strong>หมวดหมู่</strong></td>
+                <td>technical</td>
+                <td>account</td>
+            </tr>
+            <tr>
+                <td><strong>Policy ที่เจอ (RAG)</strong></td>
+                <td>SLA-001</td>
+                <td>SLA-004</td>
+            </tr>
+            <tr>
+                <td><strong>Priority</strong></td>
+                <td><span class="badge badge-red">P1</span> ด่วนมาก</td>
+                <td><span class="badge badge-green">P3</span> ปกติ</td>
+            </tr>
+            <tr>
+                <td><strong>Escalate</strong></td>
+                <td>✅ ต้องส่งหัวหน้า</td>
+                <td>❌ ไม่ต้อง</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Slide 17: Summary -->
+    <div class="slide" data-slide="17">
+        <h1>✅ สรุป AI ที่ใช้</h1>
+
+        <div class="two-col">
+            <div>
+                <div class="ai-card">
+                    <h3>🧠 NLP + Keyword Matching</h3>
+                    <p>วิเคราะห์ข้อความภาษาไทย/อังกฤษ</p>
+                </div>
+                <div class="ai-card">
+                    <h3>📊 TF-IDF Vector Search</h3>
+                    <p>ค้นหา Policy ที่เกี่ยวข้อง</p>
+                </div>
+                <div class="ai-card">
+                    <h3>🤖 Multi-Agent System</h3>
+                    <p>4 Agents ทำงานร่วมกัน</p>
+                </div>
+            </div>
+            <div>
+                <div class="box">
+                    <h3>ผลลัพธ์ที่ได้</h3>
+                    <ul>
+                        <li>จัดหมวดหมู่อัตโนมัติ</li>
+                        <li>กำหนด Priority ถูกต้อง</li>
+                        <li>อ้างอิง Policy ทุกการตัดสินใจ</li>
+                        <li>มี Confidence Score</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="simple-explain" style="text-align: center; margin-top: 20px;">
+            🎉 <strong>ขอบคุณครับ/ค่ะ</strong>
+        </div>
+    </div>
+
+    <div class="page-num" id="pageNum">1 / 17</div>
+    <div class="nav-hint">← → หรือ Space เพื่อเลื่อน</div>
+
+    <script>
+        let current = 1;
+        const total = document.querySelectorAll('.slide').length;
+
+        function show(n) {
+            if (n > total) current = 1;
+            if (n < 1) current = total;
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.slide')[current - 1].classList.add('active');
+            document.getElementById('pageNum').textContent = `${current} / ${total}`;
+            document.getElementById('progress').style.width = `${(current / total) * 100}%`;
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') { e.preventDefault(); current++; show(current); }
+            else if (e.key === 'ArrowLeft') { current--; show(current); }
+            else if (e.key === 'Home') { current = 1; show(current); }
+            else if (e.key === 'End') { current = total; show(current); }
+        });
+
+        let touchX = 0;
+        document.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+        document.addEventListener('touchend', e => {
+            const diff = touchX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) diff > 0 ? (current++, show(current)) : (current--, show(current));
+        });
+
+        document.addEventListener('click', e => {
+            if (e.target.tagName === 'CODE' || e.target.tagName === 'PRE') return;
+            e.clientX > window.innerWidth / 2 ? (current++, show(current)) : (current--, show(current));
+        });
+
+        show(current);
+    </script>
+</body>
+</html>
